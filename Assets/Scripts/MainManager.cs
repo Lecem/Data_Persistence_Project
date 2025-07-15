@@ -6,20 +6,20 @@ using UnityEngine.UI;
 
 public class MainManager : MonoBehaviour
 {
-    public Brick BrickPrefab;
-    public int LineCount = 6;
-    public Rigidbody Ball;
+    public Brick BrickPrefab; //tuðla prefabý
+    public int LineCount = 6; //tuðla satýrý
+    public Rigidbody Ball; 
 
     public Text ScoreText;
+    public Text BestScoreText;
     public GameObject GameOverText;
     
-    private bool m_Started = false;
-    private int m_Points;
+    private bool isGameStarted = false;
+    private int totalScore;
     
-    private bool m_GameOver = false;
+    private bool isGameOver = false;
 
     
-    // Start is called before the first frame update
     void Start()
     {
         const float step = 0.6f;
@@ -36,15 +36,18 @@ public class MainManager : MonoBehaviour
                 brick.onDestroyed.AddListener(AddPoint);
             }
         }
+
+        ScoreManager scoreManager = FindObjectOfType<ScoreManager>();
+        BestScoreText.text = scoreManager.bestScorePlayerName + ": " + scoreManager.bestScore;
     }
 
     private void Update()
     {
-        if (!m_Started)
+        if (!isGameStarted)
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                m_Started = true;
+                isGameStarted = true;
                 float randomDirection = Random.Range(-1.0f, 1.0f);
                 Vector3 forceDir = new Vector3(randomDirection, 1, 0);
                 forceDir.Normalize();
@@ -53,7 +56,7 @@ public class MainManager : MonoBehaviour
                 Ball.AddForce(forceDir * 2.0f, ForceMode.VelocityChange);
             }
         }
-        else if (m_GameOver)
+        else if (isGameOver)
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
@@ -64,13 +67,20 @@ public class MainManager : MonoBehaviour
 
     void AddPoint(int point)
     {
-        m_Points += point;
-        ScoreText.text = $"Score : {m_Points}";
+        totalScore += point;
+        ScoreText.text = $"Score : {totalScore}";
+
+        FindObjectOfType<ScoreManager>().AddScore(point);
+    }
+
+    public void UpdateBestScoreText(string bestPlayerName, int bestScore)
+    {
+        BestScoreText.text = bestPlayerName + ": " + bestScore;
     }
 
     public void GameOver()
     {
-        m_GameOver = true;
+        isGameOver = true;
         GameOverText.SetActive(true);
     }
 }
