@@ -39,6 +39,8 @@ public class MainManager : MonoBehaviour
 
         ScoreManager scoreManager = FindObjectOfType<ScoreManager>();
         BestScoreText.text = scoreManager.bestScorePlayerName + ": " + scoreManager.bestScore;
+
+        scoreManager.score = 0;
     }
 
     private void Update()
